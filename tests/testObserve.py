@@ -432,6 +432,25 @@ class ObservationTestCase10(unittest.TestCase):
         self.assertEqual(self.OBS.eyeon_version, version("peyeon"))
 
 
+class ObservationTestCasePDF(unittest.TestCase):
+    @classmethod
+    def setUp(self) -> None:
+        self.OBS = observe.Observe("tests/binaries/pdf_test_no1/sample.pdf")
+
+    def test_filetype_is_pdf(self) -> None:
+        self.assertEqual(self.OBS.filename, "sample.pdf")
+        self.assertEqual(self.OBS.filetype, ["PDF"])
+
+    def test_pdf_metadata(self) -> None:
+        self.assertIn("generic_file", self.OBS.metadata)
+        self.assertEqual(self.OBS.metadata["generic_file"]["extension"], ".pdf")
+        self.assertEqual(self.OBS.metadata["generic_file"]["mime_type"], "application/pdf")
+        self.assertEqual(self.OBS.metadata["generic_file"]["kind"], "unclassified")
+
+    def test_pdf_no_identify_error(self) -> None:
+        self.assertNotIn("identify_error", self.OBS.metadata.get("generic_file", {}))
+
+
 class TestFilePermissions(unittest.TestCase):
     def test_nonreadable_file(self):
         # Check to see if permission error is raised

@@ -101,6 +101,18 @@ class Observe:
             self.filetype = []
             self.metadata = self._generic_metadata(file, identify_error=str(e))
 
+        # Surfactant does not recognize every common document type (e.g. PDF).
+        # Fall back to magic-byte detection so these files are typed instead of
+        # being left as "unknown."
+        if (self.filetype is None) or (self.filetype == []):
+            try:
+                with open(file, "rb") as f:
+                    head = f.read(5)
+                if head == b"%PDF-":
+                    self.filetype = ["PDF"]
+            except OSError:
+                pass
+
         if (self.filetype is None) or (self.filetype == []):
             logger.debug(f"Unknown file type for {file}")
             if not hasattr(self, "metadata"):
